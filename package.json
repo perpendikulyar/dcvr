@@ -1,0 +1,31 @@
+{
+  "name": "dcvr",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "server",
+    "web"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,magenta \"npm -w server run dev\" \"npm -w web run dev\"",
+    "build": "npm -w web run build && npm -w server run build",
+    "start": "npm -w server run start",
+    "test": "npm -w server run test",
+    "typecheck": "npm -w server run typecheck && npm -w web run typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1"
+  }
+}
