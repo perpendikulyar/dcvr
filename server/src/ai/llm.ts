@@ -176,10 +176,20 @@ function positiveInt(value: string | undefined): number | undefined {
   return Number.isInteger(n) && n > 0 ? n : undefined;
 }
 
+const SETTING_NAMES: Record<string, string> = {
+  YANDEX_API_KEY: 'API-ключ Yandex',
+  YANDEX_FOLDER_ID: 'ID каталога Yandex Cloud',
+};
+
 function required(env: NodeJS.ProcessEnv, key: string): string {
   const value = env[key];
   if (!value) {
-    throw new Error(`Не задана переменная окружения ${key} — укажите её в .env (см. .env.example)`);
+    const name = SETTING_NAMES[key];
+    throw new Error(
+      name
+        ? `Не задан ${name} — укажите его в «Настройках» (или ${key} в .env)`
+        : `Не задана переменная окружения ${key} — укажите её в .env (см. .env.example)`,
+    );
   }
   return value;
 }

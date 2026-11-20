@@ -5,7 +5,8 @@
   "workspaces": [
     "shared",
     "server",
-    "web"
+    "web",
+    "desktop"
   ],
   "engines": {
     "node": ">=22.13"
@@ -15,17 +16,24 @@
     "build": "npm -w web run build && npm -w server run build",
     "start": "npm -w server run start",
     "test": "npm -w server run test",
-    "typecheck": "npm -w server run typecheck && npm -w web run typecheck",
+    "typecheck": "npm -w server run typecheck && npm -w web run typecheck && npm -w desktop run typecheck",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "desktop": "npm -w web run build && npm -w desktop start",
+    "desktop:dist:mac": "npm -w web run build && npm -w desktop run dist:mac",
+    "desktop:dist:win": "npm -w web run build && npm -w desktop run dist:win"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.2.1",
     "@eslint/js": "^10.0.1",
-    "concurrently": "^10.0.6",
+    "concurrently": "^10.0.7",
+    "electron": "^40.10.6",
+    "electron-builder": "^26.18.0",
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.72.1"
+    "typescript-eslint": "^8.72.1",
+    "wait-on": "^9.5.1"
   }
 }

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AnalysisResult, AnalysisRun, AnalysisStep, ContentIdea, Topic } from '@dcvr/shared';
 import { api } from '../api/client';
+import { exportPdf } from '../desktop';
+import { InsightsReport, modelName } from './InsightsReport';
 
 interface Props {
   uploadId: number;
@@ -21,6 +23,12 @@ const number = (n: number) => n.toLocaleString('ru-RU');
 const dateFormat = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'short', timeStyle: 'short' });
 const isActive = (run: AnalysisRun | undefined) =>
   run?.status === 'queued' || run?.status === 'running';
+
+/** "insights-discover-publications-20261028-2026-11-20.pdf" */
+function pdfName(filename: string | undefined, date: string): string {
+  const base = (filename ?? 'analysis').replace(/\.csv$/i, '').replace(/[^\p{L}\p{N}._-]+/gu, '-');
+  return `insights-${base.slice(0, 60)}-${date.slice(0, 10)}.pdf`;
+}
 
 export function InsightsView({ uploadId, onOpenTopic }: Props) {
   const queryClient = useQueryClient();
@@ -176,20 +184,53 @@ function Results({
     ? topics.filter((t) => t.interests.some((i) => i.id === interest))
     : topics;
 
+  const uploads = useQuery({ queryKey: ['uploads'], queryFn: api.listUploads });
+  const filename = uploads.data?.find((u) => u.id === run.uploadId)?.filename;
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const savePdf = async () => {
+    setExporting(true);
+    setExportError(null);
+    try {
+      await exportPdf(pdfName(filename, run.finishedAt ?? run.createdAt));
+    } catch (err) {
+      setExportError((err as Error).message);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <>
       <header className="insights__header">
         <div>
           <h2>Трендовые темы для аудитории</h2>
           <p className="muted">
-            {topics.length} тем · {run.provider} ({run.synthModel}) ·{' '}
+            {topics.length} тем · {run.provider} ({modelName(run.synthModel)}) ·{' '}
             {dateFormat.format(new Date(run.finishedAt ?? run.createdAt))}
           </p>
         </div>
-        <button disabled={restarting} onClick={onRestart}>
-          Перезапустить анализ
-        </button>
+        <div className="actions">
+          <button
+            disabled={exporting || !visible.length}
+            onClick={savePdf}
+            title={interest ? 'В PDF попадут темы с выбранным интересом' : undefined}
+          >
+            {exporting ? 'Сохраняю PDF…' : 'Экспорт в PDF'}
+          </button>
+          <button disabled={restarting} onClick={onRestart}>
+            Перезапустить анализ
+          </button>
+        </div>
       </header>
+      {exportError && <p className="error">{exportError}</p>}
+
+      <InsightsReport
+        result={result}
+        topics={visible}
+        filename={filename}
+        interest={coverage.find((c) => c.id === interest)}
+      />
 
       {run.skipped > 0 && (
         <p className="notice">

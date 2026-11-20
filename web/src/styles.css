@@ -822,3 +822,193 @@ button.primary {
   cursor: default;
   text-decoration: none;
 }
+
+/* PDF report: hidden on screen, the only thing printed */
+
+.report {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  #root {
+    display: none !important;
+  }
+
+  .report {
+    display: block;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    color: #111;
+  }
+
+  .report h1 {
+    font-size: 18pt;
+    margin: 0 0 6pt;
+  }
+
+  .report h2 {
+    font-size: 13pt;
+    margin: 0 0 4pt;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #111;
+  }
+
+  .report h3 {
+    font-size: 11pt;
+    margin: 8pt 0 2pt;
+  }
+
+  .report p {
+    margin: 3pt 0;
+  }
+
+  .report ul {
+    margin: 3pt 0 0;
+    padding-left: 14pt;
+  }
+
+  .report li {
+    margin: 2pt 0;
+  }
+
+  .report__header {
+    border-bottom: 1.5pt solid #2f6fde;
+    padding-bottom: 8pt;
+    margin-bottom: 10pt;
+  }
+
+  .report__section,
+  .report__topic {
+    margin-bottom: 14pt;
+  }
+
+  .report__topic {
+    border-top: 0.5pt solid #ccc;
+    padding-top: 10pt;
+  }
+
+  .report__topic h2 {
+    break-after: avoid;
+  }
+
+  .report__idea {
+    break-inside: avoid;
+    padding-left: 8pt;
+    border-left: 2pt solid #dbe6fb;
+  }
+
+  .report__format {
+    font-weight: normal;
+    font-size: 9pt;
+    color: #555;
+    border: 0.5pt solid #bbb;
+    border-radius: 6pt;
+    padding: 0 5pt;
+    white-space: nowrap;
+  }
+
+  .report__muted {
+    color: #555;
+    font-size: 9.5pt;
+  }
+}
+
+/* Settings dialog */
+
+.sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar__header .icon-button:hover {
+  color: var(--accent);
+}
+
+.dialog {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  padding: 20px;
+  width: min(520px, calc(100vw - 32px));
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 0.35);
+}
+
+.dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialog h2 {
+  font-size: 16px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field span {
+  font-weight: 500;
+}
+
+.field input {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.settings button:not(.icon-button) {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.settings button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.settings button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.success {
+  color: #2e8b57;
+}

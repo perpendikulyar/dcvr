@@ -3,6 +3,8 @@ import type {
   AnalysisRun,
   Facets,
   Headline,
+  LlmSettings,
+  LlmSettingsUpdate,
   PublicationsPage,
   PublicationsQuery,
   Upload,
@@ -58,6 +60,18 @@ export const api = {
 
   resumeAnalysis: (runId: number) =>
     request<AnalysisRun>(`/api/analysis/${runId}/resume`, { method: 'POST' }),
+
+  getSettings: () => request<LlmSettings>('/api/settings'),
+
+  saveSettings: (update: LlmSettingsUpdate) =>
+    request<LlmSettings>('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(update),
+    }),
+
+  testSettings: () =>
+    request<{ ok: true; provider: string }>('/api/settings/test', { method: 'POST' }),
 
   generateHeadlines: (topicId: number, ideaIndex: number) =>
     request<{ headlines: Headline[] }>(`/api/topics/${topicId}/ideas/${ideaIndex}/headlines`, {

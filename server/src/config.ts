@@ -11,11 +11,15 @@ try {
   // No .env — defaults apply.
 }
 
+const dbPath = process.env.DB_PATH ?? path.join(repoRoot, 'data', 'dcvr.sqlite');
+
 export const config = {
   port: Number(process.env.PORT ?? 3000),
   host: process.env.HOST ?? '127.0.0.1',
-  dbPath: process.env.DB_PATH ?? path.join(repoRoot, 'data', 'dcvr.sqlite'),
+  dbPath,
+  /** Settings edited in the UI (LLM keys); kept next to the database. */
+  settingsPath: process.env.SETTINGS_PATH ?? path.join(path.dirname(dbPath), 'settings.json'),
   /** Built frontend, served in production if present. */
-  webDist: path.join(repoRoot, 'web', 'dist'),
+  webDist: process.env.WEB_DIST ?? path.join(repoRoot, 'web', 'dist'),
   maxUploadBytes: 50 * 1024 * 1024,
 };

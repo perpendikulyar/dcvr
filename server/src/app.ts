@@ -9,16 +9,23 @@ import { uploadRoutes } from './routes/uploads.js';
 import { analysisRoutes } from './routes/analysis.js';
 import { AnalysisRunner } from './ai/runner.js';
 import { providerFromEnv, type LlmProvider } from './ai/llm.js';
+import { settingsRoutes } from './routes/settings.js';
+import { SettingsStore } from './settings.js';
 
 export interface AppOptions {
   server?: FastifyServerOptions;
-  /** LLM provider factory; defaults to the one configured in the environment. */
+  /** LLM provider factory; defaults to the one configured in settings / the environment. */
   provider?: () => LlmProvider;
+  /** Where UI-edited settings are stored; defaults to config.settingsPath. */
+  settingsPath?: string;
 }
 
 export async function buildApp(db: Db, opts: AppOptions = {}) {
   const app = Fastify(opts.server);
-  const runner = new AnalysisRunner(db, opts.provider ?? (() => providerFromEnv()), app.log);
+  const settings = new SettingsStore(opts.settingsPath ?? config.settingsPath);
+  // Built per call, so changes saved in the UI apply to the next request.
+  const provider = opts.provider ?? (() => providerFromEnv(settings.env()));
+  const runner = new AnalysisRunner(db, provider, app.log);
   app.addHook('onClose', async () => runner.stopAll());
 
   await app.register(multipart, { limits: { fileSize: config.maxUploadBytes, files: 1 } });
@@ -37,6 +44,7 @@ export async function buildApp(db: Db, opts: AppOptions = {}) {
   app.get('/api/health', async () => ({ ok: true }));
   await app.register(uploadRoutes(db), { prefix: '/api' });
   await app.register(analysisRoutes(db, runner), { prefix: '/api' });
+  await app.register(settingsRoutes(settings, provider), { prefix: '/api' });
 
   // Production: serve the built SPA. In dev, Vite serves it and proxies /api here.
   if (fs.existsSync(config.webDist)) {

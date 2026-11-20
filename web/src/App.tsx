@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { api } from './api/client';
 import { useUrlState } from './hooks/useUrlState';
@@ -7,9 +7,11 @@ import { PublisherFilter } from './components/PublisherFilter';
 import { CategoryFilter, NO_CATEGORY } from './components/CategoryFilter';
 import { PublicationsTable } from './components/PublicationsTable';
 import { InsightsView } from './components/InsightsView';
+import { SettingsDialog } from './components/SettingsDialog';
 
 export function App() {
   const { state, update, resetFilters } = useUrlState();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { view, upload: uploadId, topic, publisher, category, sort, order, page, pageSize } = state;
 
   const uploads = useQuery({ queryKey: ['uploads'], queryFn: api.listUploads });
@@ -76,7 +78,18 @@ export function App() {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <h1 className="brand">Discover Stats</h1>
+        <header className="sidebar__header">
+          <h1 className="brand">Discover Stats</h1>
+          <button
+            className="icon-button"
+            title="Настройки"
+            aria-label="Настройки"
+            onClick={() => setSettingsOpen(true)}
+          >
+            ⚙
+          </button>
+        </header>
+        <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
         <UploadPanel
           uploads={uploads.data ?? []}
           selected={uploadId}

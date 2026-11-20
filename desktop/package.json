@@ -1,0 +1,71 @@
+{
+  "name": "@dcvr/desktop",
+  "productName": "Discover Stats",
+  "version": "1.0.0",
+  "description": "Discover Stats: просмотр выгрузок статистики и ИИ-инсайты",
+  "author": "dcvr",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.mjs",
+  "scripts": {
+    "build": "node build.mjs",
+    "electron:install": "node ../node_modules/electron/install.js",
+    "start": "npm run build && npm run electron:install && env -u ELECTRON_RUN_AS_NODE electron .",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:win": "npm run build && electron-builder --win",
+    "typecheck": "tsc --noEmit"
+  },
+  "build": {
+    "appId": "ru.dcvr.discoverstats",
+    "productName": "Discover Stats",
+    "electronVersion": "43.8.12",
+    "npmRebuild": false,
+    "nodeGypRebuild": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "web"
+      }
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.productivity",
+      "identity": "-"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "43.8.12",
+    "electron-builder": "26.18.0",
+    "esbuild": "0.28.2"
+  }
+}

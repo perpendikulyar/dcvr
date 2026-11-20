@@ -156,3 +156,20 @@ export interface AnalysisResult {
   /** Every DMP interest, including ones with no topics. */
   coverage: InterestCoverage[];
 }
+
+// ---------- Settings ----------
+
+/** LLM settings as the UI sees them; the API key itself is never returned. */
+export interface LlmSettings {
+  provider: string;
+  yandexFolderId: string;
+  yandexApiKeySet: boolean;
+  /** Last characters of the saved key, e.g. "…x7Qz". */
+  yandexApiKeyHint: string;
+}
+
+export interface LlmSettingsUpdate {
+  /** Omitted: keep; empty string: clear. */
+  yandexApiKey?: string;
+  yandexFolderId?: string;
+}
